@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Submission Form</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="form-container">
+    <h1>Event Submission Form</h1>
+    <form id="eventForm">
+
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="date">Date</label>
+      <input type="date" id="date" name="date" required>
+
+      <label for="venue">Venue</label>
+      <input type="text" id="venue" name="venue" required>
+
+      <label for="coordinator">Coordinator</label>
+      <input type="text" id="coordinator" name="coordinator" required>
+
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="4"></textarea>
+
+      <label for="attendancePdf">Attendance PDF</label>
+      <input type="file" id="attendancePdf" name="attendancePdf" accept="application/pdf">
+
+      <label for="photo1">Photo 1</label>
+      <input type="file" id="photo1" name="photo1" accept="image/*">
+
+      <label for="photo2">Photo 2</label>
+      <input type="file" id="photo2" name="photo2" accept="image/*">
+
+      <label for="photo3">Photo 3</label>
+      <input type="file" id="photo3" name="photo3" accept="image/*">
+
+      <label for="photosLink">Photos Link</label>
+      <input type="url" id="photosLink" name="photosLink" placeholder="https://drive.google.com/...">
+
+      <label for="fundDetails">Fund Details</label>
+      <input type="file" id="fundDetails" name="fundDetails" accept="application/pdf">
+
+      <button type="submit" id="submitBtn">Submit</button>
+      <p id="statusMsg"></p>
+    </form>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
