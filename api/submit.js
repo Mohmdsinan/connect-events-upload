@@ -90,7 +90,7 @@ export default async function handler(req, res) {
       Coordinator: coordinator || "",
       Description: description || "",
       "Photos link": photosLink || "",
-      // "Fund Details": fundDetails || "",
+      "Fund Details": fundDetails || "",
     });
 
     const recordId = record.id;

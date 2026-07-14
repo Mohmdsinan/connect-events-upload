@@ -4,7 +4,7 @@
 //    • Drop-zone interactivity (click, keyboard, drag-and-drop)
 //    • Footer year
 //    • Status message class toggling
-//    • Photo 1 & 2 required validation
+//    • Full required-field validation (all 7 fields)
 //    • Form submission to /api/submit
 // =============================================================
 
@@ -25,7 +25,7 @@ const statusObserver = new MutationObserver(() => {
 
   if (txt.startsWith("Submitted")) {
     statusMsg.className = "status-success";
-  } else if (txt.startsWith("Error")) {
+  } else if (txt.startsWith("Error") || txt.startsWith("Please")) {
     statusMsg.className = "status-error";
   } else if (txt.startsWith("Submitting")) {
     statusMsg.className = "status-loading";
@@ -54,13 +54,14 @@ document.querySelectorAll(".drop-zone").forEach(zone => {
     }
   });
 
-  // Update hint text and visual state when a file is chosen
+  // Update hint text and visual state when a file is chosen.
+  // Also clears any validation error as soon as the user picks a file.
   input.addEventListener("change", () => {
     if (input.files.length) {
       const name = input.files[0].name;
       hint.textContent = name.length > 30 ? name.slice(0, 28) + "…" : name;
       zone.classList.add("drop-zone--has-file");
-      zone.classList.remove("drop-zone--error");
+      zone.classList.remove("drop-zone--error");   // clear error on fix
     } else {
       hint.textContent = zone.classList.contains("drop-zone--photo")
         ? "No file chosen"
@@ -92,6 +93,14 @@ document.querySelectorAll(".drop-zone").forEach(zone => {
   });
 });
 
+// ── Live "clear error on fix" for text / date inputs ─────────
+// Removes the red error highlight as soon as the user starts typing.
+["name", "date", "venue", "coordinator"].forEach(id => {
+  document.getElementById(id).addEventListener("input", function () {
+    if (this.value.trim()) this.classList.remove("input--error");
+  });
+});
+
 // ── File → base64 payload helper ─────────────────────────────
 function fileToPayload(file) {
   return new Promise((resolve, reject) => {
@@ -110,40 +119,70 @@ function fileToPayload(file) {
   });
 }
 
+// ── Validation ────────────────────────────────────────────────
+// Checks all 7 required fields. Applies red highlights to every
+// invalid field and returns an array of human-readable field names
+// that are missing. Returns an empty array when everything is valid.
+function validateAll() {
+  const missing = [];
+
+  // Helper: validate a plain text / date input
+  function checkInput(id, label) {
+    const el = document.getElementById(id);
+    if (!el.value.trim()) {
+      el.classList.add("input--error");
+      missing.push(label);
+    } else {
+      el.classList.remove("input--error");
+    }
+  }
+
+  // Helper: validate a file drop-zone input
+  function checkFile(inputId, zoneId, label) {
+    const input = document.getElementById(inputId);
+    const zone  = document.getElementById(zoneId);
+    if (!input.files.length) {
+      zone.classList.add("drop-zone--error");
+      missing.push(label);
+    } else {
+      zone.classList.remove("drop-zone--error");
+    }
+  }
+
+  // ── Text / date fields ──
+  checkInput("name",        "Event Name");
+  checkInput("date",        "Date");
+  checkInput("venue",       "Venue");
+  checkInput("coordinator", "Coordinator");
+
+  // ── Required file fields ──
+  checkFile("attendancePdf", "zone-attendancePdf", "Attendance PDF");
+  checkFile("photo1",        "zone-photo1",        "Photo 1");
+  checkFile("photo2",        "zone-photo2",        "Photo 2");
+
+  return missing;
+}
+
 // ── Form submission ───────────────────────────────────────────
 form.addEventListener("submit", async e => {
   e.preventDefault();
 
-  // --- Photo 1 & 2 client-side validation ---
-  const photo1File = document.getElementById("photo1").files[0];
-  const photo2File = document.getElementById("photo2").files[0];
-  const missing    = [];
-
-  if (!photo1File) {
-    missing.push("Photo 1");
-    document.getElementById("zone-photo1").classList.add("drop-zone--error");
-  } else {
-    document.getElementById("zone-photo1").classList.remove("drop-zone--error");
-  }
-
-  if (!photo2File) {
-    missing.push("Photo 2");
-    document.getElementById("zone-photo2").classList.add("drop-zone--error");
-  } else {
-    document.getElementById("zone-photo2").classList.remove("drop-zone--error");
-  }
+  // --- Run full validation before doing anything else ---
+  const missing = validateAll();
 
   if (missing.length) {
-    statusMsg.textContent = "Error: Please upload " + missing.join(" and ") + " before submitting.";
-    submitBtn.disabled = false;
-    return;
+    statusMsg.textContent =
+      "Please fill in: " + missing.join(", ") + ".";
+    return;                 // block submission entirely
   }
 
-  // --- Proceed with submission ---
+  // --- All required fields present — proceed ---
   submitBtn.disabled = true;
   statusMsg.textContent = "Submitting…";
 
   try {
+    const photo1File        = document.getElementById("photo1").files[0];
+    const photo2File        = document.getElementById("photo2").files[0];
     const attendancePdfFile = document.getElementById("attendancePdf").files[0];
     const eventPosterFile   = document.getElementById("eventPoster").files[0];
     const photo3File        = document.getElementById("photo3").files[0];
@@ -178,12 +217,10 @@ form.addEventListener("submit", async e => {
       body:    JSON.stringify(payload),
     });
 
-    const data = await res.text();
+    const result = await res.json();
 
     console.log("Status: ", res.status);
-    console.log("Response: ", data)
-
-    const result = await res.json();
+    console.log("Response: ", result);
 
     if (!res.ok) {
       throw new Error(result.error || "Submission failed");
@@ -201,6 +238,11 @@ form.addEventListener("submit", async e => {
           ? "No file chosen"
           : zone.dataset.accept + " files only";
       }
+    });
+
+    // Clear any lingering text-input error highlights after reset
+    ["name", "date", "venue", "coordinator"].forEach(id => {
+      document.getElementById(id).classList.remove("input--error");
     });
 
   } catch (err) {

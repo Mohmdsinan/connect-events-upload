@@ -84,7 +84,7 @@
 
         <!-- Attendance PDF -->
         <div class="field-group">
-          <label for="attendancePdf">Attendance PDF</label>
+          <label for="attendancePdf">Attendance PDF<span class="required">*</span></label>
           <div class="drop-zone" id="zone-attendancePdf" data-target="attendancePdf" data-accept="PDF">
             <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
               <path d="M12 16V8m0 0-3 3m3-3 3 3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -92,7 +92,7 @@
             </svg>
             <p class="drop-text">Drop PDF here or <span class="drop-browse">browse</span></p>
             <p class="drop-hint" id="hint-attendancePdf">PDF files only</p>
-            <input type="file" id="attendancePdf" name="attendancePdf" accept="application/pdf" tabindex="-1">
+            <input type="file" id="attendancePdf" name="attendancePdf" accept="application/pdf" tabindex="-1" required>
           </div>
         </div>
 
