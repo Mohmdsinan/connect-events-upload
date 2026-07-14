@@ -75,6 +75,7 @@ body {
   align-items: center;
   text-decoration: none;
   outline-offset: 4px;
+  flex-shrink: 0;
 }
 
 .logo-img {
@@ -82,6 +83,7 @@ body {
   width: auto;
   max-width: 220px;
   display: block;
+  flex-shrink: 0;
 }
 
 /* ================================================================
@@ -554,10 +556,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   .photos-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
-  }
-
-  .logo-img {
-    height: 44px;
   }
 }
 
