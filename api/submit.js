@@ -19,11 +19,8 @@ async function createRecord(fields) {
       body: JSON.stringify({ fields }),
     }
   );
+
   const data = await res.json();
-
-  console.log("Status:", res.status);
-  console.log("Airtable Response:", JSON.stringify(data, null, 2));
-
   if (!res.ok) {
     throw new Error(data?.error?.message || "Failed to create Airtable record");
   }
@@ -79,16 +76,11 @@ export default async function handler(req, res) {
       photosLink,
       fundDetails,
       attendancePdf,
+      eventPoster,
       photo1,
       photo2,
       photo3,
     } = req.body;
-
-    console.log({
-      AIRTABLE_TOKEN: AIRTABLE_TOKEN ? "Loaded ✅" : "Missing ❌",
-      BASE_ID,
-      TABLE_NAME,
-    });
 
     // Step 1: create the record with text fields only
     const record = await createRecord({
@@ -105,6 +97,7 @@ export default async function handler(req, res) {
 
     // Step 2: upload attachments one at a time (Airtable processes these sequentially per record)
     if (attendancePdf) await uploadAttachment(recordId, "Attendance PDF", attendancePdf);
+    if (eventPoster)   await uploadAttachment(recordId, "Event Poster",   eventPoster);
     if (photo1) await uploadAttachment(recordId, "Photo 1", photo1);
     if (photo2) await uploadAttachment(recordId, "Photo 2", photo2);
     if (photo3) await uploadAttachment(recordId, "Photo 3", photo3);

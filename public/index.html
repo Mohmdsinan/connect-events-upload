@@ -67,6 +67,21 @@
           <span>Attachments</span>
         </div>
 
+        <!-- Event Poster -->
+        <div class="field-group">
+          <label for="eventPoster">Event Poster</label>
+          <div class="drop-zone" id="zone-eventPoster" data-target="eventPoster" data-accept="Image">
+            <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="4"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="m21 15-5-5L5 21" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <p class="drop-text">Drop image here or <span class="drop-browse">browse</span></p>
+            <p class="drop-hint" id="hint-eventPoster">Image files only</p>
+            <input type="file" id="eventPoster" name="eventPoster" accept="image/*" tabindex="-1">
+          </div>
+        </div>
+
         <!-- Attendance PDF -->
         <div class="field-group">
           <label for="attendancePdf">Attendance PDF</label>

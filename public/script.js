@@ -145,11 +145,13 @@ form.addEventListener("submit", async e => {
 
   try {
     const attendancePdfFile = document.getElementById("attendancePdf").files[0];
+    const eventPosterFile   = document.getElementById("eventPoster").files[0];
     const photo3File        = document.getElementById("photo3").files[0];
 
     // Convert all selected files to base64 in parallel
-    const [attendancePdf, photo1, photo2, photo3] = await Promise.all([
+    const [attendancePdf, eventPoster, photo1, photo2, photo3] = await Promise.all([
       fileToPayload(attendancePdfFile),
+      fileToPayload(eventPosterFile),
       fileToPayload(photo1File),
       fileToPayload(photo2File),
       fileToPayload(photo3File),
@@ -164,6 +166,7 @@ form.addEventListener("submit", async e => {
       photosLink:  document.getElementById("photosLink").value,
       fundDetails: document.getElementById("fundDetails").value,
       attendancePdf,
+      eventPoster,
       photo1,
       photo2,
       photo3,
@@ -174,6 +177,11 @@ form.addEventListener("submit", async e => {
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify(payload),
     });
+
+    const data = await res.text();
+
+    console.log("Status: ", res.status);
+    console.log("Response: ", data)
 
     const result = await res.json();
 
